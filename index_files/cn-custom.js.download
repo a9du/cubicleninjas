@@ -1,0 +1,395 @@
+(function ($, window, document, undefined) {
+
+    // Listen for the "Document Ready" event
+    window.addEventListener('DOMContentLoaded', function () {
+        // Services Mega Menu
+        servicesMegaMenu();
+
+        // Was utilized for the Flyout Nav Menu widget (currently in-active)
+        // navAccordionInit();
+
+        // Adds animations to blog posts widget
+        $('.nectar-recent-posts-slider_multiple_visible .nectar-button').addClass('buttonfx');
+
+        // Calendy Popup to Schedule Buttons
+        // Default Button that displays all three options
+        if ($('.cn-calendly-button').length > 0) {
+            $('.cn-calendly-button')
+                .removeAttr("href")
+                .attr('onclick', 'Calendly.initPopupWidget({url: \'https://calendly.com/helloninjas\'})\;return false\;')
+                .css('cursor', 'pointer');
+        }
+        // 15 Minute Button that only displays the 15 minute session option
+        if ($('.cn-calendly-15-button').length > 0) {
+            $('.cn-calendly-15-button')
+                .removeAttr("href")
+                .attr('onclick', 'Calendly.initPopupWidget({url: \'https://calendly.com/helloninjas/15-minute\'})\;return false\;')
+                .css('cursor', 'pointer');
+        }
+        // 30 Minute Button that only displays the 30 minute session option
+        if ($('.cn-calendly-30-button').length > 0) {
+            $('.cn-calendly-30-button')
+                .removeAttr("href")
+                .attr('onclick', 'Calendly.initPopupWidget({url: \'https://calendly.com/helloninjas/30-minute\'})\;return false\;')
+                .css('cursor', 'pointer');
+        }
+        // 60 Minute Button that only displays the 60 minute session option
+        if ($('.cn-calendly-60-button').length > 0) {
+            $('.cn-calendly-60-button')
+                .removeAttr("href")
+                .attr('onclick', 'Calendly.initPopupWidget({url: \'https://calendly.com/helloninjas/60-minute\'})\;return false\;')
+                .css('cursor', 'pointer');
+        }
+
+        // if ($('.nectar-button.large.regular.accent-color.regular-button:contains("Schedule Now")').length > 0) {
+        //     $('.nectar-button.large.regular.accent-color.regular-button:contains("Schedule Now")').removeAttr("href").attr('onclick', 'Calendly.initPopupWidget({url: \'https://calendly.com/helloninjas\'})\;return false\;').css('cursor', 'pointer');
+        // }
+        // if ($('.nectar-button.medium.regular.extra-color-3:contains("Brainstorm With Us")').length > 0) {
+        //     $('.nectar-button.medium.regular.extra-color-3:contains("Brainstorm With Us")').removeAttr("href").attr('onclick', 'Calendly.initPopupWidget({url: \'https://calendly.com/helloninjas\'})\;return false\;').css('cursor', 'pointer');
+        // }
+
+        // Typed Hero on the Homepage
+        if ($(document.body).hasClass('page-id-66')) {
+            homepageTypedHero(document.querySelector('span.typed-phrase'));
+        }
+
+        // Sticky sidebar on the Insights Page
+        if ($(document.body).hasClass('page-id-3363')) {
+            stickySidebar();
+        }
+
+        // Portfolio Filters
+        if ($(document.body).hasClass('page-id-37018') || // Local (Copy Work Page)
+            $(document.body).hasClass('page-id-34767') || // Staging (Copy Work Page)
+            $(document.body).hasClass('page-id-665') // Production (Actual Work Page)
+        ) {
+            var loadingOverlay = $('#sf-loading-overlay');
+            loadingOverlay.addClass('is-loading');
+            var resetButton = $('li.sf-field-reset');
+            resetButton.css('display', 'none');
+        }
+    });
+
+    // Listen for the document to be fully loaded
+    window.addEventListener('load', function () {
+        // Initializing Portfolio Filters Functionalities
+        if ($(document.body).hasClass('page-id-37018') ||  // Local (Copy Work Page)
+            $(document.body).hasClass('page-id-34767') ||  // Staging (Copy Work Page)
+            $(document.body).hasClass('page-id-665')  // Production (Actual Work Page)
+        ) {
+            portfolioFilters();
+            select2Init();
+        }
+        // userback();
+        contactFlyout();
+        cookieConsent();
+        contactThankyouConfetti();
+    });
+
+    // Listen for the Resize Event
+    window.addEventListener('resize', function () {});
+
+    function contactThankyouConfetti() {
+        if (document.body.classList.contains('page-id-31356')) {
+            if (party) {
+                party.screen({
+                    count: 500 * (window.innerWidth / 1980),
+                    countVariation: 0.5,
+                    angleSpan: 0,
+                    yVelocity: -100,
+                    yVelocityVariation: 2,
+                    rotationVelocityLimit: 6,
+                    scaleVariation: 0.8
+                });
+            } else {
+                console.log('no-party.js');
+            }
+        }
+    }
+
+    function contactFlyout() {
+        // console.log('Contact Flyout');
+        var _toggle = $('.contact-flyout-toggle'),
+            _close = $('.contact-flyout .fa.fa-close'),
+            _flyout = $('.contact-flyout');
+
+        _toggle.on('click', function () {
+            _flyout.toggleClass('open');
+        });
+        _close.on('click', function () {
+            _flyout.toggleClass('open');
+        })
+
+        var _wpcf7Elm = document.querySelector('.contact-flyout .wpcf7');
+        _wpcf7Elm.addEventListener( 'wpcf7mailsent', function(event) {
+            setTimeout(function () {
+                _flyout.toggleClass('open');
+            }, 1000);
+        }, false );
+    }
+
+    function cookieConsent() {
+        var closeBtn = document.querySelector('.cn-cookie .iubenda-cs-close-btn');
+        if (closeBtn) {
+            closeBtn.style.backgroundColor = '#f26522';
+        }
+    }
+
+    function userback() {
+        if (Userback) {
+            if (Userback.isLoaded()) {
+                var ub = document.querySelector('.userback-button-container');
+                var button = ub.querySelector('.userback-button.userback-button-se');
+                var inject = '<img src="'+window.location+'wp-content/themes/salient-child/img/ub-button.png" style="width: 56px; height: 56px; position: absolute; left: 0; top: 0;" />';
+                button.innerHTML = inject;
+                button.style.backgroundColor = 'transparent';
+                button.style.display = 'block';
+
+                button.addEventListener('click', function () {
+                    var ubform = $('form.userback-controls-options');
+                    var ubinput = $('.userback-description-container');
+                    var hasTitleAlready = $('.userback-controls-step').find('.userback-cn-title');
+
+                    if (ubform) {
+                        if (!hasTitleAlready.length) {
+                            $('<h4 class="userback-cn-title">Need a Ninja?</h4>').insertBefore(ubform);
+                        }
+                    }
+                    if (ubinput) {
+                        $('.userback-description-container textarea').attr('placeholder', 'How can we help?');
+                    }
+                });
+            } else {
+                console.log('Userback Has Been NOT BEEN LOADED');
+            }
+        }
+    }
+
+    // BEGIN Portfolio Filters
+    function select2Init() {
+        $('select.sf-input-select').each(function() {
+            var $selector;
+
+            //select 2 already initialized
+            if($(this).prev('.select2-container').length > 0) {
+                $selector = $(this).prev('.select2-container');
+            } else {
+                $selector = $(this);
+            }
+
+            //if label is found
+            if($selector.prev('label').length == 1) {
+                $selector.prev('label').andSelf().wrapAll('<div class="fancy-select-wrapper" />');
+            } else if($selector.next('label').length == 1) {
+                $selector.next('label').andSelf().wrapAll('<div class="fancy-select-wrapper" />');
+            } else {
+                //default wrap
+                $selector.wrap('<div class="fancy-select-wrapper" />');
+            }
+
+            $(this).select2({
+                minimumResultsForSearch: 7,
+                dropdownAutoWidth: true,
+                theme: 'default',
+                width: '100%'
+            });
+        });
+    }
+    function portfolioFilters() {
+        var portfolioItems = [].slice.call(document.querySelectorAll('ul.portfolio-posts li'));
+        var loadingOverlay = $('#sf-loading-overlay');
+
+        loadingOverlay.removeClass('is-loading');
+
+        $.each(portfolioItems, function(index, val) {
+            $(this).addClass('offsetable--in');
+        });
+
+        $(document).on("sf:ajaxstart", ".searchandfilter", function () {
+            var portfolioAjaxStartItems = [].slice.call(document.querySelectorAll('ul.portfolio-posts li'));
+            var loadingOverlay = $('#sf-loading-overlay');
+            var resetButton = $('li.sf-field-reset');
+            resetButton.css('display', 'block');
+            select2Init();
+            $.each(portfolioAjaxStartItems, function (index, val) {
+                if ($(this).hasClass('offsetable--in')) {
+                    $(this).removeClass('offsetable--in');
+                }
+                if (!$(this).hasClass('offsetable--out')) {
+                    $(this).addClass('offsetable--out');
+                }
+            });
+            loadingOverlay.addClass('is-loading');
+        });
+
+        $(document).on("sf:ajaxfinish", ".searchandfilter", function () {
+            var portfolioAjaxFinishItems = [].slice.call(document.querySelectorAll('ul.portfolio-posts li'));
+            var loadingOverlay = $('#sf-loading-overlay');
+            select2Init();
+            $.each(portfolioAjaxFinishItems, function (index, val) {
+                if ($(this).hasClass('offsetable--out')) {
+                    $(this).removeClass('offsetable--out');
+                }
+                if (!$(this).hasClass('offsetable--in')) {
+                    $(this).addClass('offsetable--in');
+                }
+            });
+            loadingOverlay.removeClass('is-loading');
+        });
+
+        // window.addEventListener('scroll', debounce(function () {
+        //     portfolioItems.forEach(function (item) {
+        //         if (!$(item).isInViewport()) {
+        //             item.addClass('animate-flipped-in');
+        //         }
+        //     })
+        // }, 100));
+    } // END Portfolio Filters
+
+    // BEGIN Services Mega Menu
+    function servicesMegaMenu() {
+         // Had to target this way because development <li> id and production <li> id weren't the same
+         // Otherwise would have targeted the View All Services sub-menu li directly
+        var $menuItemTrigger = $('li#menu-item-3365 ul.sub-menu li:last-child'); // WARNING: menu item has to be the last item in the submenu
+        var $megaMenu = $('div[id*="cn_custom_services_mega_menu_widget-"]');
+        var $megaMenuCloseButton = $megaMenu.find('#close');
+        var $megaMenuLink = $megaMenu.find('a');
+
+        if ($(window).width() > 999) {
+            $menuItemTrigger.on('click', function (evt) {
+                evt.preventDefault();
+                $megaMenu.toggleClass('open');
+            });
+
+            $megaMenuCloseButton.on('click', function (evt) {
+                $megaMenu.removeClass('open');
+            })
+
+            $megaMenuLink.on('click', function (evt) {
+                $megaMenu.removeClass('open');
+            });
+        } else {
+            return false;
+        }
+    } // END Services Mega Menu
+
+    // This was for the Header Flyout Menu Widget right-side accordion (currently in-active)
+    // BEGIN Navigation Accordion
+    function navAccordionInit() {
+        var $accItems = $('.nav-accordion .nav-accordion-item');
+        var $triggers = $accItems.find('.nav-accordion-item--trigger');
+
+        $triggers.on('click', function (evt) {
+            if ($(this).parent().hasClass('hide')) {
+                $accItems.addClass('hide');
+                $(this).parent().removeClass('hide');
+            } else {
+                $(this).parent().addClass('hide');
+            }
+        });
+
+        // Because the custom cursor, (or something else), is jacking the mouse events on the scroll for this div
+        $('.nav-accordion').on('DOMMouseScroll mousewheel', function (evt) {
+            evt.stopPropagation();
+        })
+    } // END Navigation Accordion
+
+    // BEGIN Sticky Sidebar
+    function stickySidebar() {
+        var stickySidebar = $('.sideBar');
+
+        if (stickySidebar) {
+            // var sidebarOffset = stickySidebar.offset().top;
+            var sidebarOffset = stickySidebar.offset();
+            $(window).scroll(function () {
+                if ($(window).scrollTop() > sidebarOffset) {
+                    $('.sideBar').addClass('affix');
+                } else {
+                    $('.sideBar').removeClass('affix');
+                }
+            });
+
+            $('.sideBar .vc_column-inner  .wpb_wrapper .wpb_row.vc_row-fluid.vc_row.inner_row.standard_section:nth-child(2)').attr('data-simplebar', '');
+            $('.sideBar .vc_column-inner  .wpb_wrapper .wpb_row.vc_row-fluid.vc_row.inner_row.standard_section:nth-child(2)').attr('data-simplebar-auto-hide', 'false');
+            new SimpleBar($('.sideBar .vc_column-inner  .wpb_wrapper .wpb_row.vc_row-fluid.vc_row.inner_row.standard_section:nth-child(2)')[0]);
+        }
+    } // END Sticky Sidebar
+
+    // BEGIN Homepage Typed Out Hero Text
+    function homepageTypedHero(elem) {
+        var typed_phrases = elem.dataset.phrases;
+        var parsed = JSON.parse(typed_phrases);
+        if (parsed) {
+            var options = {
+                strings: parsed,
+                typeSpeed: 70,
+                loop: true,
+                backDelay: 2000,
+                backSpeed: 70
+            }
+            var typed = new Typed(elem, options);
+        } else {
+            console.log('Not on the homepage, nothing to type out.');
+            return false;
+        }
+    } // END Homepage Typed Out Hero Text
+
+    // BEGIN Helper Function for debouncing function calls
+    function debounce(func, threshold, execAsap) {
+        var timeout;
+        return function debounced() {
+            var obj = this,
+                args = arguments;
+
+            function delayed() {
+                if (!execAsap) {
+                    func.apply(obj, args)
+                }
+                timeout = null
+            }
+            if (timeout) {
+                clearTimeout(timeout)
+            } else if (execAsap) {
+                func.apply(obj, args)
+            }
+            timeout = setTimeout(delayed, threshold || 100)
+        }
+    } // END Helper Function for debouncing function calls
+
+    function isInViewport() {
+        var elementTop = $(this).offset().top;
+        var elementBottom = elementTop + $(this).outerHeight();var viewportTop = $(window).scrollTop();
+        var viewportBottom = viewportTop + $(window).height();return elementBottom > viewportTop && elementTop < viewportBottom;
+    };
+
+    // BEGIN Helper Function to detect whether or not an item is in the viewport
+    // function isInViewport(elem) {
+    //     var distance = elem.getBoundingClientRect();
+    //     return (
+    //         distance.top >= 0 &&
+    //         distance.left >= 0 &&
+    //         distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    //         distance.right <= (window.innerWidth || document.documentElement.clientWidth)
+    //     );
+    // } // BEGIN Helper Function to detect whether or not an item is in the viewport
+
+    // $.fn.isOnScreen = function(){
+
+    //     var win = $(window);
+
+    //     var viewport = {
+    //         top : win.scrollTop(),
+    //         left : win.scrollLeft()
+    //     };
+    //     viewport.right = viewport.left + win.width();
+    //     viewport.bottom = viewport.top + win.height();
+
+    //     var bounds = this.offset();
+    //     bounds.right = bounds.left + this.outerWidth();
+    //     bounds.bottom = bounds.top + this.outerHeight();
+
+    //     return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
+
+    // };
+
+})(jQuery, window, document, undefined);
